@@ -105,7 +105,6 @@ class MainFrame(wx.Frame):
         self.createUserButton.Bind(wx.EVT_BUTTON,self.onCreateNewUserClicked)
         self.createUserButton.Disable()
         self.lastColumnSizer.Add(self.createUserButton,0,wx.ALL,5)
-        self.lastColumnSizer.Add(self.createUserButton,0,wx.ALL,5)
         self.createUserSizer.Add(self.staffIdSizer,0,wx.ALL,5)
         self.createUserSizer.Add(self.usernameSizer,0,wx.ALL,5)
         self.createUserSizer.Add(self.departmentSizer,0,wx.ALL,5)
@@ -126,10 +125,10 @@ class MainFrame(wx.Frame):
         userDictionary = dict(zipped)
         items = userDictionary.items()
         for key,data in items:
-            index = self.userList.InsertStringItem(sys.maxint,str(data[0]))
-            self.userList.SetStringItem(index,1,data[1])
-            self.userList.SetStringItem(index,2,data[2])
-            self.userList.SetStringItem(index,3,data[3])
+            index = self.userList.InsertItem(sys.maxint,str(data[0]))
+            self.userList.SetItem(index,1,str(data[1]))
+            self.userList.SetItem(index,2,str(data[2]))
+            self.userList.SetItem(index,3,str(data[3]))
             self.userList.SetItemData(index,key)
         self.userList.Bind(wx.EVT_LIST_ITEM_SELECTED,self.onUserListItemSelected)
 
@@ -159,10 +158,10 @@ class MainFrame(wx.Frame):
         userDictionary = dict(zipped)
         items = userDictionary.items()
         for key,data in items:
-            index = self.userList.InsertStringItem(sys.maxint,str(data[0]))
-            self.userList.SetStringItem(index,1,data[1])
-            self.userList.SetStringItem(index,2,data[2])
-            self.userList.SetStringItem(index,3,data[3])
+            index = self.userList.InsertItem(sys.maxint,str(data[0]))
+            self.userList.SetItem(index,1,data[1])
+            self.userList.SetItem(index,2,data[2])
+            self.userList.SetItem(index,3,data[3])
             self.userList.SetItemData(index,key)
     def onRefreshButtonClicked(self,e):
         self.updateUserList()

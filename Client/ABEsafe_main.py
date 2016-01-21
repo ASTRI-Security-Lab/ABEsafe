@@ -240,7 +240,7 @@ class ABEinfo(wx.Panel):
         self.statusLabel = wx.StaticText(self,label="",pos=(270,100))
         self.statusLabel.SetFont(wx.Font(16,wx.SWISS,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False))
         
-    def setInfo(self,profile=None,staff_id=None,department=None,position=None,seclv=None):
+    def setInfo(self,profile=None,staff_id=None,department=None,position=None,seclv=None, attributes={}):
         global USERNAME, USER_ID, USERDEPARTMENT, USERPOSITION, USERSECLV
         self.info = {}
         self.info['name'] = profile if profile else USERNAME
@@ -248,6 +248,9 @@ class ABEinfo(wx.Panel):
         self.info['dep']=department if department is not None else USERDEPARTMENT
         self.info['pos']=position if position is not None else USERPOSITION
         self.info['sec']=seclv if seclv is not None else str(USERSECLV) if USERSECLV>0 else "Not Specified"
+        if isinstance(attributes, dict):
+            for attribute in attributes:
+                self.info[attribute] = attributes[attribute]
         self.Refresh()
         self.Update()
 
