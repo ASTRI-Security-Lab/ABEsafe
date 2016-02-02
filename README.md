@@ -24,7 +24,7 @@ brew install python
 ```
 Install wxpython,
 ```
-pip install wxpython
+pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/Phoenix/snapshot-builds/ wxPython_Phoenix
 ```
 
 Download this repository, with git:
@@ -44,6 +44,7 @@ To run the admin tool,
 cd Admin
 python ABEsafe_admin.py
 ```
+Short demo: [Admin tool demo](https://www.youtube.com/watch?v=b140-TauYIU)
 
 Select the folder you would like to build the system on.
 You can then create a new user, or retrieve the passphrase of an existing user.
@@ -54,6 +55,7 @@ To run the client,
 cd Client
 python ABEsafe_main.py
 ```
+Short demo: [Client application demo](https://www.youtube.com/watch?v=MbeI-toh4nI)
 
 Select the folder where an ABE system has already built.
 Select the user account, and copy the passphrase which could be found in the admin tool.
