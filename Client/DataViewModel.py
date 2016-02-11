@@ -21,13 +21,13 @@ FUN4_COLOR = wx.Colour(63,232,213)
 FUN5_COLOR = wx.Colour(0,172,178)
 BLACK_COLOR = wx.Colour(40,40,20)
 
-class PanelTreeListModel(dv.PyDataViewModel):
+class PanelTreeListModel(wx.dataview.PyDataViewModel):
     def __init__(self, data, log):
-        dv.PyDataViewModel.__init__(self)
+        wx.dataview.PyDataViewModel.__init__(self)
         self.data = data
         self.log = log
         self.showAll = False
-        self.objmapper.UseWeakRefs(True)
+        self.UseWeakRefs(True)
 
         self.tree = self.walkDB()
         self.timer = wx.CallLater(SYNC_FREQ,self.syncDB)
@@ -94,13 +94,13 @@ class PanelTreeListModel(dv.PyDataViewModel):
     
     def GetParent(self, item):
         if not item:
-            return dv.NullDataViewItem
+            return wx.dataview.NullDataViewItem
         node = self.ItemToObject(item)        
         if not isinstance(node, DB_Entity):
             raise RuntimeError("[GetParent] unknown node type")
         tmp = node.getParent()
         if not tmp:
-            return dv.NullDataViewItem
+            return wx.dataview.NullDataViewItem
         else:
             return self.ObjectToItem(tmp)     
 
@@ -212,7 +212,7 @@ class FilePanel(wx.Panel):
         
         self.dest = CPABE.SHARED_FOLDER_NAME
         # Create a dataview control
-        self.dvc = dv.DataViewCtrl(self, style=wx.BORDER_THEME | dv.DV_ROW_LINES | dv.DV_VERT_RULES)
+        self.dvc = wx.dataview.DataViewCtrl(self, style=wx.BORDER_THEME | wx.dataview.DV_ROW_LINES | wx.dataview.DV_VERT_RULES)
         if model is None:
             self.model = PanelTreeListModel(data, log)
         else:
@@ -222,9 +222,9 @@ class FilePanel(wx.Panel):
         self.dvc.AssociateModel(self.model)
         self.model.syncDB()
 
-        c1 = self.dvc.AppendTextColumn("Name",    0, width=320, mode=dv.DATAVIEW_CELL_INERT)
-        c2 = self.dvc.AppendTextColumn("Encrypted",   1, width=80, mode=dv.DATAVIEW_CELL_ACTIVATABLE,align=wx.ALIGN_CENTRE)
-        c3 = self.dvc.AppendTextColumn('Allowed',   2, width=80, mode=dv.DATAVIEW_CELL_ACTIVATABLE,align=wx.ALIGN_CENTRE)
+        c1 = self.dvc.AppendTextColumn("Name",    0, width=320, mode=wx.dataview.DATAVIEW_CELL_INERT)
+        c2 = self.dvc.AppendTextColumn("Encrypted",   1, width=80, mode=wx.dataview.DATAVIEW_CELL_ACTIVATABLE,align=wx.ALIGN_CENTRE)
+        c3 = self.dvc.AppendTextColumn('Allowed',   2, width=80, mode=wx.dataview.DATAVIEW_CELL_ACTIVATABLE,align=wx.ALIGN_CENTRE)
         
         # Set some additional attributes for all the columns
         for c in self.dvc.Columns:
@@ -236,8 +236,8 @@ class FilePanel(wx.Panel):
         self.Sizer = wx.BoxSizer(wx.VERTICAL)
         self.Sizer.Add(self.dvc, 1, wx.EXPAND)
 
-        self.dvc.Bind(dv.EVT_DATAVIEW_ITEM_ACTIVATED, self.OnOpen)
-        self.dvc.Bind(dv.EVT_DATAVIEW_SELECTION_CHANGED, self.OnSel)
+        self.dvc.Bind(wx.dataview.EVT_DATAVIEW_ITEM_ACTIVATED, self.OnOpen)
+        self.dvc.Bind(wx.dataview.EVT_DATAVIEW_SELECTION_CHANGED, self.OnSel)
 
         self.parent.setInfo()
         self.dvc.GetColumn(1).SetSortOrder(True)
@@ -245,6 +245,8 @@ class FilePanel(wx.Panel):
         self.model.syncDB()
 
     def OnSel(self,ev):
+        if not ev.GetItem():
+            return
         try:
             rname = self.model.ItemToObject(ev.GetItem()).getRname()
             if rname:

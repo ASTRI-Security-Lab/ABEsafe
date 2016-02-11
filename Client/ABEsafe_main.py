@@ -359,6 +359,8 @@ class MainApp(wx.App):
                 shutil.rmtree(CPABE.TMP)
             except Exception as e:
                 self.log.write("remove tmp dir error: %s"%e)
+                return False
+        return True
 
 class LoginWindows(wx.Frame):
     def __init__(self,parent, log):
@@ -629,7 +631,7 @@ class LoginWindows(wx.Frame):
 
 if __name__=='__main__':
     os.putenv('PATH',os.getenv('PATH')+':.')
-    stdout = open('.log','a+',0)#open(r'/dev/stdout','a',0)
+    stdout = open('.log','a+',0)
     tempdir = tempfile.gettempdir()
     dirs = os.listdir(tempdir)
     for a_dir in dirs:

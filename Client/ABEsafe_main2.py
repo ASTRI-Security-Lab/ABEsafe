@@ -88,7 +88,7 @@ class ABEmain2(wx.Panel):
         #DOCK
         cancelImage = wx.Image('img/ic_action_back_b.png')
         cancelImage.Rescale(40,40)
-        self.cancelButton = wx.BitmapButton(self,bitmap=wx.BitmapFromImage(cancelImage),pos=(10,240))
+        self.cancelButton = wx.BitmapButton(self,bitmap=wx.Bitmap(cancelImage),pos=(10,240))
         self.cancelButton.Bind(wx.EVT_BUTTON,self.onCancelButtonClicked)
         self.cancelButton = wx.StaticText(self,label="Cancel",pos=(10,225),style=wx.ALIGN_CENTRE)
         self.cancelButton.SetFont(wx.Font(12,wx.DEFAULT,wx.NORMAL,weight=wx.BOLD))
@@ -96,8 +96,8 @@ class ABEmain2(wx.Panel):
         encryptImage.Rescale(40,40)
         encryptDisabledImage = wx.Image('img/ic_action_secure_w.png')
         encryptDisabledImage.Rescale(40,40)
-        self.encryptButton = wx.BitmapButton(self,bitmap=wx.BitmapFromImage(encryptImage),pos=(560,240))
-        self.encryptButton.SetBitmapDisabled(wx.BitmapFromImage(encryptDisabledImage))
+        self.encryptButton = wx.BitmapButton(self,bitmap=wx.Bitmap(encryptImage),pos=(560,240))
+        self.encryptButton.SetBitmapDisabled(wx.Bitmap(encryptDisabledImage))
         self.encryptButton.Bind(wx.EVT_BUTTON,self.callEncrypt)
         self.encryptButton.Disable()
         self.encryptLabel = wx.StaticText(self,label="Encrypt",pos=(555,225),style=wx.ALIGN_CENTRE)
@@ -262,14 +262,14 @@ class PolicyGUI_frame(wx.Frame):
         self.buttonSizer.Add(self.resetButton,0,wx.ALL|wx.ALIGN_RIGHT,5)
         self.buttonSizer.Add(self.addGroupButton,0,wx.ALL|wx.ALIGN_RIGHT,5)
         self.buttonSizer.Add(self.groupConfirmButton,0,wx.ALL|wx.ALIGN_RIGHT,5)
-        self.buttonSizer.AddSpacer((150,10))
+        self.buttonSizer.Add(150,10)
         self.buttonSizer.Add(self.confirmButton,0,wx.ALL|wx.ALIGN_RIGHT,5)
-        self.buttonSizer.AddSpacer((20,10))
+        self.buttonSizer.Add(20,10)
         self.groupSizer.Add(self.titleLabel,0,wx.ALL,5)
         self.groupSizer.Add(self.attributeSizer,0,wx.ALL,5)
 
         self.wrapSizer.Add(self.groupSizer,1,wx.ALL,5)
-        self.wrapSizer.AddSpacer((50,10))
+        self.wrapSizer.Add(50,10)
         self.wrapSizer.Add(self.userSizer,1,wx.ALL,5)
         self.mainSizer.Add(self.wrapSizer,0,wx.ALL,0)
         self.mainSizer.Add(self.buttonSizer,0,wx.ALIGN_RIGHT)
@@ -416,7 +416,7 @@ class PolicyGUI_frame(wx.Frame):
 
     class Rule_box(wx.Panel):
         def __init__(self,parent,p_frame,offset=(0,0)):
-            wx.Panel.__init__(self,None)
+            wx.Panel.__init__(self,parent)
             self.parent = parent
             self.attributeList = []
 
@@ -543,10 +543,10 @@ class PolicyGUI_frame(wx.Frame):
             index = None
             for key,data in items:
                 if data2:
-                    index = listCtrl.InsertStringItem(sys.maxint,str(data[0]))
-                    listCtrl.SetStringItem(index,1,str(data[1]))
+                    index = listCtrl.InsertItem(sys.maxint,str(data[0]))
+                    listCtrl.SetItem(index,1,str(data[1]))
                 else:
-                    index = listCtrl.InsertStringItem(sys.maxint,str(data))
+                    index = listCtrl.InsertItem(sys.maxint,str(data))
                 listCtrl.SetItemData(index,key)
                 
         def onListNeedModify(self,e):
