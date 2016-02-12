@@ -5,6 +5,7 @@ import sqlite3
 import threading
 import Queue
 
+from ctypes.util import find_library
 from ctypes import *
 
 
@@ -18,7 +19,7 @@ class ABEsafe_generator:
 	DATABASE_file = "test.db"
 	DATABASE = CONFIG_PATH+DATABASE_file
 	PRIV_NAME = ""
-	libc = CDLL('libabe.so')
+	libc = CDLL(find_library('libabe.so'))
 	@staticmethod
 	def generateKey(staffId,username,department,position,seclv):
 	    try:

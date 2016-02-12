@@ -2,6 +2,8 @@ import wx.lib.delayedresult as DR
 import os
 import sys
 import re
+
+from ctypes.util import find_library
 from ctypes import *
 
 class CPABE:
@@ -27,7 +29,7 @@ class CPABE:
     IMG_PATH = ABEsafe_PATH+"/userImages/"
     DATABASE_file = "test.db"
     DATABASE = CONFIG_PATH+DATABASE_file
-    libc = CDLL("libabe.so")
+    libc = CDLL(find_library("libabe.so"))
     
     @staticmethod
     def runcpabe(runtype,jid,onresult,*args):
