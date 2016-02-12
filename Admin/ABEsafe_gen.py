@@ -19,7 +19,7 @@ class ABEsafe_generator:
 	DATABASE_file = "test.db"
 	DATABASE = CONFIG_PATH+DATABASE_file
 	PRIV_NAME = ""
-	libc = CDLL(find_library('libabe.so'))
+	libc = cdll.LoadLibrary('./libabe.so')
 	@staticmethod
 	def generateKey(staffId,username,department,position,seclv):
 	    try:
@@ -44,7 +44,7 @@ class ABEsafe_generator:
 	    sec_prop = "" if sec_lv is None else "seclv = %d"%sec_lv
 	    ABEsafe_generator.PRIV_NAME = "%s%s_priv_key"%(ABEsafe_generator.KEYS_PATH,privkey_filename)
 	    s = "%s"%("" if staffId_prop=="" else "'%s'"%staffId_prop)+" '"+username+"' '"+department+"' '"+position+"' "+"%s"%("" if sec_prop=="" else "'%s'"%sec_prop)
-	    status = ABEsafe_generator.libc.abe_generatekey(str("%s%s_priv_key"%(ABEsafe_generator.KEYS_PATH,privkey_filename)), str(ABEsafe_generator.CONFIG_PATH+".pub_key"), str(ABEsafe_generator.CONFIG_PATH+".master_key"), str(s))
+	    status = ABEsafe_generator.libc.abe_generatekey(str("%s%s_priv_key"%(ABEsafe_generator.KEYS_PATH,privkey_filename)), str(ABEsafe_generator.CONFIG_PATH+".pub_key"), str(".master_key"), str(s))
 	    with open('%s.%s'%(ABEsafe_generator.CONFIG_PATH,privkey_filename),'w+') as f:
 	    	f.write("OK")
 	    
@@ -82,9 +82,7 @@ class ABEsafe_generator:
 			log.info("Master Key generated successfully")
 		else:
 			log.warning("Failed to generate master key, %s"%status)
-		"""encrypt master_key"""
-		shutil.move(".master_key","%s.master_key"%ABEsafe_generator.CONFIG_PATH)
-
+		
 		departments = (
 			(None,'HumanResources'),
 			(None,'IT'),
