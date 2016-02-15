@@ -543,7 +543,7 @@ class LoginWindows(wx.Frame):
         self.sharedFolderLabel.SetForegroundColour(wx.BLUE)
         self.sharedFolderPathSelection = wx.DirPickerCtrl(self.panel,message="Select ABEsafe folder directory",pos=(145,100))
         self.sharedFolderPathSelection.Bind(wx.EVT_DIRPICKER_CHANGED,self.OnSharedFolderSelected)
-        self.selectButton = wx.Button(self,label="Select",pos=(150,140))
+        self.selectButton = wx.Button(self.panel,label="Select",pos=(150,140))
         self.selectButton.Bind(wx.EVT_BUTTON,self.OnSelectUserAccount)
         self.Show(True)
         self.getDefaultSharedFolderPath()

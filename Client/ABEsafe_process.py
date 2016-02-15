@@ -29,8 +29,8 @@ class CPABE:
     IMG_PATH = ABEsafe_PATH+"/userImages/"
     DATABASE_file = "test.db"
     DATABASE = CONFIG_PATH+DATABASE_file
-    libc = cdll.LoadLibrary("./libabe.so"))
-    
+    ABE_LIBRARY = 'libabe_linux.so' if platform.system().lower() == 'linux' else 'libabe.so'
+    libc = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.realpath(__file__)),os.path.join('lib',ABE_LIBRARY)))
     @staticmethod
     def runcpabe(runtype,jid,onresult,*args):
         """

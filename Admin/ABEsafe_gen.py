@@ -5,7 +5,7 @@ import sqlite3
 import threading
 import Queue
 
-from ctypes.util import find_library
+import platform
 from ctypes import *
 
 
@@ -19,7 +19,8 @@ class ABEsafe_generator:
 	DATABASE_file = "test.db"
 	DATABASE = CONFIG_PATH+DATABASE_file
 	PRIV_NAME = ""
-	libc = cdll.LoadLibrary('./libabe.so')
+	ABE_LIBRARY = 'libabe_linux.so' if platform.system().lower() == 'linux' else 'libabe.so'
+	libc = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.realpath(__file__)),os.path.join('lib',ABE_LIBRARY)))
 	@staticmethod
 	def generateKey(staffId,username,department,position,seclv):
 	    try:
