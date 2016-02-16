@@ -3,7 +3,7 @@ import os
 import sys
 import re
 
-from ctypes.util import find_library
+import platform
 from ctypes import *
 
 class CPABE:
@@ -22,15 +22,16 @@ class CPABE:
     TMP = '/private/tmp/org.astri.cpabe'
     SHARED_FOLDER_NAME = ""
     HOME_PATH = ""
+    LOCAL_PATH = os.path.dirname(os.path.realpath(__file__))
     SHARED_FOLDER_PATH = ""
-    ABEsafe_PATH = SHARED_FOLDER_PATH+"/ABEsafe"
-    KEYS_PATH = ".keys/"
-    CONFIG_PATH = ABEsafe_PATH+"/.configs/"
-    IMG_PATH = ABEsafe_PATH+"/userImages/"
+    ABEsafe_PATH = os.path.join(SHARED_FOLDER_PATH,"ABEsafe")
+    KEYS_PATH = os.path.join(LOCAL_PATH,".keys")
+    CONFIG_PATH = os.path.join(ABEsafe_PATH,".configs")
+    IMG_PATH = os.path.join(ABEsafe_PATH,"userImages")
     DATABASE_file = "test.db"
-    DATABASE = CONFIG_PATH+DATABASE_file
+    DATABASE = os.path.join(CONFIG_PATH,DATABASE_file)
     ABE_LIBRARY = 'libabe_linux.so' if platform.system().lower() == 'linux' else 'libabe.so'
-    libc = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.realpath(__file__)),os.path.join('lib',ABE_LIBRARY)))
+    libc = cdll.LoadLibrary(os.path.join(LOCAL_PATH,os.path.join('lib',ABE_LIBRARY)))
     @staticmethod
     def runcpabe(runtype,jid,onresult,*args):
         """
@@ -49,21 +50,21 @@ class CPABE:
                 replica += 1
             import tempfile
             ftmp = tempfile.NamedTemporaryFile()
-            result = CPABE.libc.abe_encrypt(str(ftmp.name), str(CPABE.CONFIG_PATH+".pub_key"), str(args[1]), str(args[2].replace(';','')))
+            result = CPABE.libc.abe_encrypt(str(ftmp.name), str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(args[1]), str(args[2].replace(';','')))
             DR.startWorker(onresult,CPABE.execbg,cargs=(ftmp,fcheck),wargs=(result,),jobID=jid)
         elif runtype==CPABE.DEC:
-            result = CPABE.libc.abe_decrypt(str(args[0]), str(CPABE.CONFIG_PATH+".pub_key"), str("%s%s"%(CPABE.KEYS_PATH,args[1])), str(args[2].replace(';','')))
+            result = CPABE.libc.abe_decrypt(str(args[0]), str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(os.path.join(CPABE.KEYS_PATH,args[1])), str(args[2].replace(';','')))
             DR.startWorker(onresult,CPABE.execbg,wargs=(result,),jobID=jid)
         elif runtype==CPABE.OPEN:
-            status = CPABE.libc.abe_checkopen(str(CPABE.CONFIG_PATH+".pub_key"), str("%s%s"%(CPABE.KEYS_PATH,args[0])), str(args[1].replace(';','')))
+            status = CPABE.libc.abe_checkopen(str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(os.path.join(CPABE.KEYS_PATH,args[0])), str(args[1].replace(';','')))
             return status
         elif runtype==CPABE.MKEY:
-            result = CPABE.libc.abe_checkmetapriv(str(CPABE.CONFIG_PATH+".pub_key"), str(args[0]), str("%s%s"%(CPABE.KEYS_PATH,args[1]).replace(';','')))
+            result = CPABE.libc.abe_checkmetapriv(str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(args[0]), str(os.path.join(CPABE.KEYS_PATH,args[1]).replace(';','')))
             DR.startWorker(onresult,CPABE.execbg,wargs=(result,),jobID=jid)
         elif runtype==CPABE.POK:
             if re.sub(r"\s+", '', args[0]) == "":
                 return 1
-            status = CPABE.libc.abe_checkmeta(str(CPABE.CONFIG_PATH+".pub_key"), str(args[0].replace(';','')))
+            status = CPABE.libc.abe_checkmeta(str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(args[0].replace(';','')))
             return status
     
     @staticmethod

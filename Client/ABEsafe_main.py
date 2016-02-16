@@ -268,7 +268,7 @@ class ABEinfo(wx.Panel):
         dc.Clear()
         dc.SetFont(wx.Font(20,wx.MODERN,wx.FONTSTYLE_SLANT,wx.FONTWEIGHT_BOLD,False))
         offset = 10
-        img = wx.Image('%s%s.jpg'%(CPABE.IMG_PATH,self.info['name']+"_"+str(self.info['id'])), wx.BITMAP_TYPE_JPEG).Rescale(PROFILE_SCALE,PROFILE_SCALE).ConvertToBitmap()
+        img = wx.Image(os.path.join(CPABE.IMG_PATH,'%s.jpg'%(self.info['name']+"_"+str(self.info['id']))), wx.BITMAP_TYPE_JPEG).Rescale(PROFILE_SCALE,PROFILE_SCALE).ConvertToBitmap()
         
         dc.DrawBitmap(img,10,10+offset,True)
         dc.SetFont(wx.Font(16,wx.MODERN,wx.FONTSTYLE_SLANT,wx.FONTWEIGHT_BOLD,False))
@@ -286,7 +286,7 @@ class ABEinfo(wx.Panel):
         dc.DrawText(self.info['pos'],210,45+offset)
         dc.DrawText(self.info['dep'],210,60+offset)
 
-        img = wx.Image('img/ASTRI.png',wx.BITMAP_TYPE_PNG).Rescale(200,96).ConvertToBitmap()
+        img = wx.Image(os.path.join(CPABE.LOCAL_PATH,'img/ASTRI.png'),wx.BITMAP_TYPE_PNG).Rescale(200,96).ConvertToBitmap()
         dc.DrawBitmap(img,430,10+offset,True)
 
 class MainFrame(wx.Frame):
@@ -372,26 +372,26 @@ class LoginWindows(wx.Frame):
         self.Bind(wx.EVT_CLOSE,self.OnClose)
         self.panel = wx.Panel(self,size=(400,300))
         login_font = wx.Font(16,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False)
-        login_label = wx.StaticText(self,label="Select your account to login",pos=(70,50))
+        login_label = wx.StaticText(self.panel,label="Select your account to login",pos=(70,50))
         login_label.SetFont(login_font)
         login_label.SetForegroundColour(DB.BLACK_COLOR)
         login_font = wx.Font(14,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_SLANT,wx.FONTWEIGHT_NORMAL,False)
-        self.sharedFolderLabel = wx.StaticText(self,label="Shared Folder",pos=(20,100))
+        self.sharedFolderLabel = wx.StaticText(self.panel,label="Shared Folder",pos=(20,100))
         self.sharedFolderLabel.SetFont(login_font)
         self.sharedFolderLabel.SetForegroundColour(DB.BLACK_COLOR)
-        self.usernameLabel = wx.StaticText(self,label="Username",pos=(20,150))
+        self.usernameLabel = wx.StaticText(self.panel,label="Username",pos=(20,150))
         self.usernameLabel.SetFont(login_font)
         self.usernameLabel.SetForegroundColour(DB.BLACK_COLOR)
-        self.passphraseLabel = wx.StaticText(self,label="Passphrase",pos=(20,200))
+        self.passphraseLabel = wx.StaticText(self.panel,label="Passphrase",pos=(20,200))
         self.passphraseLabel.SetFont(login_font)
         self.passphraseLabel.SetForegroundColour(DB.BLACK_COLOR)
         self.sharedFolderPathSelection = wx.DirPickerCtrl(self.panel,message="Select ABEsafe folder directory",pos=(145,100))
 
         self.sharedFolderPathSelection.Bind(wx.EVT_DIRPICKER_CHANGED,self.OnSharedFolderSelected)
-        self.usernameComboBox = wx.ComboBox(self,pos=(150,150),size=(130,25),choices=self.nl,style=wx.CB_READONLY)
+        self.usernameComboBox = wx.ComboBox(self.panel,pos=(150,150),size=(130,25),choices=self.nl,style=wx.CB_READONLY)
         self.usernameComboBox.Bind(wx.EVT_COMBOBOX,self.OnSelectUser)
-        self.passphraseBox = wx.TextCtrl(self,pos=(150,200),size=(130,25))
-        self.selectButton = wx.Button(self,label="Select",pos=(150,240))
+        self.passphraseBox = wx.TextCtrl(self.panel,pos=(150,200),size=(130,25))
+        self.selectButton = wx.Button(self.panel,label="Select",pos=(150,240))
         self.selectButton.Bind(wx.EVT_BUTTON,self.OnSelectUserAccount)
         self.usernameLabel.Disable()
         self.usernameComboBox.Disable()
@@ -403,8 +403,8 @@ class LoginWindows(wx.Frame):
         USERNAME = self.namelist[self.usernameComboBox.GetStringSelection()]
         USER_ID = self.ndict[self.usernameComboBox.GetStringSelection()]
         USERKEY = USERNAME+"_"+str(USER_ID)+'_priv_key'
-        self.log.write(CPABE.KEYS_PATH+USERKEY+" ex:"+str(os.path.exists(CPABE.KEYS_PATH+USERKEY))+"\n")
-        if os.path.exists(CPABE.KEYS_PATH+USERKEY):
+        self.log.write(os.path.join(CPABE.KEYS_PATH,USERKEY)+" ex:"+str(os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)))+"\n")
+        if os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
             self.passphraseLabel.Disable()
             self.passphraseBox.Disable()
         else:
@@ -416,10 +416,10 @@ class LoginWindows(wx.Frame):
             CPABE.SHARED_FOLDER_PATH = self.sharedFolderPathSelection.GetPath()
         else:
             CPABE.SHARED_FOLDER_PATH = ""
-        CPABE.ABEsafe_PATH = os.path.relpath(CPABE.SHARED_FOLDER_PATH+"/ABEsafe")+"/"
-        CPABE.CONFIG_PATH = os.path.relpath(CPABE.ABEsafe_PATH+".configs")+"/"
-        CPABE.KEYS_PATH = os.path.relpath(".keys/"+CPABE.SHARED_FOLDER_PATH)+"/"
-        CPABE.DATABASE = os.path.relpath(CPABE.CONFIG_PATH+CPABE.DATABASE_file)
+        CPABE.ABEsafe_PATH = os.path.join(CPABE.SHARED_FOLDER_PATH,"ABEsafe")
+        CPABE.CONFIG_PATH = os.path.join(CPABE.ABEsafe_PATH,".configs")
+        CPABE.KEYS_PATH = os.path.join(os.path.join(CPABE.LOCAL_PATH,".keys"),os.path.relpath(CPABE.SHARED_FOLDER_PATH,"/"))
+        CPABE.DATABASE = os.path.join(CPABE.CONFIG_PATH,CPABE.DATABASE_file)
         if not(os.path.exists(CPABE.ABEsafe_PATH) and os.path.exists(CPABE.CONFIG_PATH) and os.path.exists(CPABE.DATABASE)):
             self.nl=[]
             self.namelist = {}
@@ -474,11 +474,11 @@ class LoginWindows(wx.Frame):
                 CPABE.SHARED_FOLDER_NAME = " "
         else:
             CPABE.SHARED_FOLDER_PATH = ""
-        CPABE.ABEsafe_PATH = os.path.relpath(CPABE.SHARED_FOLDER_PATH+"/ABEsafe")
-        CPABE.KEYS_PATH = os.path.relpath(".keys/"+CPABE.SHARED_FOLDER_PATH)+"/"
-        CPABE.CONFIG_PATH = os.path.relpath(CPABE.ABEsafe_PATH+"/.configs")+"/"
-        CPABE.IMG_PATH = os.path.relpath(CPABE.ABEsafe_PATH+"/userImages")+"/"
-        CPABE.DATABASE = os.path.relpath(CPABE.CONFIG_PATH+CPABE.DATABASE_file)
+        CPABE.ABEsafe_PATH = os.path.join(CPABE.SHARED_FOLDER_PATH,"ABEsafe")
+        CPABE.KEYS_PATH = os.path.join(os.path.join(CPABE.LOCAL_PATH,".keys"),os.path.relpath(CPABE.SHARED_FOLDER_PATH,"/"))
+        CPABE.CONFIG_PATH = os.path.join(CPABE.ABEsafe_PATH,".configs")
+        CPABE.IMG_PATH = os.path.join(CPABE.ABEsafe_PATH,"userImages")
+        CPABE.DATABASE = os.path.join(CPABE.CONFIG_PATH,CPABE.DATABASE_file)
         if not os.path.exists(CPABE.KEYS_PATH):
             os.makedirs(CPABE.KEYS_PATH)
         if not(os.path.exists(CPABE.ABEsafe_PATH) and os.path.exists(CPABE.CONFIG_PATH) and os.path.exists(CPABE.DATABASE)):
@@ -526,41 +526,40 @@ class LoginWindows(wx.Frame):
             if self.passphraseBox.IsEnabled() and passphrase != "":
                 decodedphrase = None
                 try:
-                    with open(CPABE.KEYS_PATH+USERKEY,mode='wb+') as f:
+                    with open(os.path.join(CPABE.KEYS_PATH,USERKEY),mode='wb+') as f:
                         import base64
                         decodedphrase = passphrase.decode('base64')
                         f.write(decodedphrase)
                 except:
                     wx.MessageBox("The passphrase is incorrect","incorrect passphrase")
-                    os.remove(CPABE.KEYS_PATH+USERKEY)
+                    os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                     return "decoding error"
-                if not os.path.exists(CPABE.KEYS_PATH+USERKEY):
+                if not os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
                     self.log.write("Key does not exist right before decryption test")
-                if not os.path.exists(CPABE.CONFIG_PATH+".%s_test"%(USERNAME+"_"+str(USER_ID))):
+                if not os.path.exists(os.path.join(CPABE.CONFIG_PATH,".%s_test"%(USERNAME+"_"+str(USER_ID)))):
                     self.log.write("Encrypted test file does not exist")
 
-                libc = CDLL("libabe.so")
-                status = libc.abe_decrypt(str(".tmpTest"), str(CPABE.CONFIG_PATH+".pub_key"), str(CPABE.KEYS_PATH+USERKEY), str(CPABE.CONFIG_PATH+".%s_test"%(USERNAME+"_"+str(USER_ID))))
+                status = CPABE.libc.abe_decrypt(str(os.path.join(CPABE.LOCAL_PATH,".tmpTest")), str(os.path.join(CPABE.CONFIG_PATH,".pub_key")), str(os.path.join(CPABE.KEYS_PATH,USERKEY)), str(os.path.join(CPABE.CONFIG_PATH,".%s_test"%(USERNAME+"_"+str(USER_ID)))))
                 result = False
-                if os.path.exists(".tmpTest"):
+                if os.path.exists(os.path.join(CPABE.LOCAL_PATH,".tmpTest")):
                     readtext = None
-                    with open(".tmpTest",'r') as f:
+                    with open(os.path.join(CPABE.LOCAL_PATH,".tmpTest"),'r') as f:
                         readtext = f.read()
                         if readtext=="OK":
                             wx.MessageBox("Login successful. Your account is saved.")
                             for (dirpath,dirnames,filenames) in os.walk(CPABE.KEYS_PATH):
                                 for f in filenames:
                                     fname = os.path.join(dirpath,f)
-                                    if fname != CPABE.KEYS_PATH+USERKEY:
+                                    if fname != os.path.join(CPABE.KEYS_PATH,USERKEY):
                                         os.remove(fname)
                             result = True
-                    os.remove(".tmpTest")
+                    os.remove(os.path.join(CPABE.LOCAL_PATH,".tmpTest"))
                     if readtext is not None:
                         self.log.write(readtext+"\n")
                 else:
                     self.log.write(".tmpTest not exists error\n")
                 if result == False:
-                    os.remove(CPABE.KEYS_PATH+USERKEY)
+                    os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                     wx.MessageBox("The passphrase is incorrect","incorrect passphrase")
                     self.log.write("incorrect passphrase\n")
                     self.OnSharedFolderSelected(self.sharedFolderPathSelection)
@@ -568,14 +567,14 @@ class LoginWindows(wx.Frame):
             elif self.passphraseBox.IsEnabled() and passphrase == "":
                 wx.MessageBox("Please enter the secret passphrase","Secret Passphrase required")
                 self.OnSharedFolderSelected(self.sharedFolderPathSelection)
-                if os.path.exists(CPABE.KEYS_PATH+USERKEY):
-                    os.remove(CPABE.KEYS_PATH+USERKEY)
+                if os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
+                    os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                 return
 
             if user is None:
-                if os.path.exists(CPABE.KEYS_PATH+USERKEY):
+                if os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
                     try:
-                        os.remove(CPABE.KEYS_PATH+USERKEY)
+                        os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                     except:
                         pass
                     wx.MessageBox("User '%s' is not found in the system."%USERNAME,"User not found in this system",wx.OK)
@@ -590,7 +589,7 @@ class LoginWindows(wx.Frame):
                     os.makedirs(CPABE.TMP,0o700)
                 except:
                     pass
-                with open(".path",'w+') as f:
+                with open(os.path.join(CPABE.LOCAL_PATH,".path"),'w+') as f:
                     tpath = CPABE.SHARED_FOLDER_PATH[:-1] if CPABE.SHARED_FOLDER_PATH[-1]=="/" else CPABE.SHARED_FOLDER_PATH
                     f.write(tpath)
 
@@ -603,16 +602,15 @@ class LoginWindows(wx.Frame):
             self.Destroy()
 
     def getDefaultSharedFolderPath(self):
-        if os.path.exists(".path"):
+        if os.path.exists(os.path.join(CPABE.LOCAL_PATH,".path")):
             tmp = None
-            with open(".path",'r') as f:
+            with open(os.path.join(CPABE.LOCAL_PATH,".path"),'r') as f:
                 tmp = f.read()
             if os.path.exists(tmp):
-                sfp = tmp+"/"
-                abesafep = sfp+"ABEsafe/"
-                cp = abesafep+".configs/"
-                d = cp+CPABE.DATABASE_file
-                if os.path.exists(tmp) and os.path.exists(abesafep) and os.path.exists(cp) and os.path.exists(d):
+                abesafep = os.path.join(tmp,"ABEsafe")
+                cp = os.path.join(abesafep,".configs")
+                d = os.path.join(cp,CPABE.DATABASE_file)
+                if os.path.exists(abesafep) and os.path.exists(cp) and os.path.exists(d):
                     self.sharedFolderPathSelection.SetPath(tmp)
                     self.OnSharedFolderSelected(self.sharedFolderPathSelection)
         else:
@@ -631,7 +629,7 @@ class LoginWindows(wx.Frame):
 
 if __name__=='__main__':
     os.putenv('PATH',os.getenv('PATH')+':.')
-    stdout = open('.log','a+',0)
+    stdout = open(os.path.join(CPABE.LOCAL_PATH,'.log'),'a+',0)
     tempdir = tempfile.gettempdir()
     dirs = os.listdir(tempdir)
     for a_dir in dirs:

@@ -41,7 +41,7 @@ class ABEmain2(wx.Panel):
         for f in files:
             m_idcon = re.search(r'^(([A-z]|[0-9])+)_[0-9]+\.jpg$',f)
             if m_idcon:
-                bmp = wx.Image('%s%s'%(CPABE.IMG_PATH,f),wx.BITMAP_TYPE_JPEG).Rescale(IDCON_SIZE,IDCON_SIZE).ConvertToBitmap()
+                bmp = wx.Image(os.path.join(CPABE.IMG_PATH,f),wx.BITMAP_TYPE_JPEG).Rescale(IDCON_SIZE,IDCON_SIZE).ConvertToBitmap()
                 self.il.Add(bmp)
                 nl.append(m_idcon.group(1))
         self.ulc_eliwall = ULC.UltimateListCtrl(self, -1, agwStyle=wx.LC_ICON | wx.LC_AUTOARRANGE )
@@ -86,21 +86,22 @@ class ABEmain2(wx.Panel):
         self.ulc_eliwall.Bind(wx.EVT_LIST_ITEM_SELECTED,self.onEli)
 
         #DOCK
-        cancelImage = wx.Image('img/ic_action_back_b.png')
+        self.dock = wx.Panel(self)
+        cancelImage = wx.Image(os.path.join(CPABE.LOCAL_PATH,'img/ic_action_back_b.png'))
         cancelImage.Rescale(40,40)
-        self.cancelButton = wx.BitmapButton(self,bitmap=wx.Bitmap(cancelImage),pos=(10,240))
+        self.cancelButton = wx.BitmapButton(self.dock,bitmap=wx.Bitmap(cancelImage),pos=(10,240))
         self.cancelButton.Bind(wx.EVT_BUTTON,self.onCancelButtonClicked)
-        self.cancelButton = wx.StaticText(self,label="Cancel",pos=(10,225),style=wx.ALIGN_CENTRE)
-        self.cancelButton.SetFont(wx.Font(12,wx.DEFAULT,wx.NORMAL,weight=wx.BOLD))
-        encryptImage = wx.Image('img/ic_action_secure_b.png')
+        self.cancelLabel = wx.StaticText(self.dock,label="Cancel",pos=(10,225),style=wx.ALIGN_CENTRE)
+        self.cancelLabel.SetFont(wx.Font(12,wx.DEFAULT,wx.NORMAL,weight=wx.BOLD))
+        encryptImage = wx.Image(os.path.join(CPABE.LOCAL_PATH,'img/ic_action_secure_b.png'))
         encryptImage.Rescale(40,40)
-        encryptDisabledImage = wx.Image('img/ic_action_secure_w.png')
+        encryptDisabledImage = wx.Image(os.path.join(CPABE.LOCAL_PATH,'img/ic_action_secure_w.png'))
         encryptDisabledImage.Rescale(40,40)
-        self.encryptButton = wx.BitmapButton(self,bitmap=wx.Bitmap(encryptImage),pos=(560,240))
+        self.encryptButton = wx.BitmapButton(self.dock,bitmap=wx.Bitmap(encryptImage),pos=(560,240))
         self.encryptButton.SetBitmapDisabled(wx.Bitmap(encryptDisabledImage))
         self.encryptButton.Bind(wx.EVT_BUTTON,self.callEncrypt)
         self.encryptButton.Disable()
-        self.encryptLabel = wx.StaticText(self,label="Encrypt",pos=(555,225),style=wx.ALIGN_CENTRE)
+        self.encryptLabel = wx.StaticText(self.dock,label="Encrypt",pos=(555,225),style=wx.ALIGN_CENTRE)
         self.encryptLabel.SetFont(wx.Font(12,wx.DEFAULT,wx.NORMAL,weight=wx.BOLD))
         self.encryptLabel.Disable()
 
@@ -115,6 +116,7 @@ class ABEmain2(wx.Panel):
         self.userlistLabel.SetBackgroundColour("white")
         self.mainSizer.Add(self.userlistLabel,0, wx.EXPAND)
         self.mainSizer.Add(self.ulc_eliwall, 1, wx.EXPAND, 0)
+        self.mainSizer.Add(self.dock)
         self.SetSizer(self.mainSizer)
         self.timer = wx.CallLater(1500,self.validatePolicy)
 
@@ -194,7 +196,7 @@ class ABEmain2(wx.Panel):
         jid = DR.getJobID()
         if res==2:
             self.log.write('[oneligibles] il:%s\n'%self.il.GetImageCount())
-            bmp = wx.Image('%s%s'%(CPABE.IMG_PATH,self.pj_mkey[jid]+'_priv_key.png'),wx.BITMAP_TYPE_PNG).Scale(IDCON_SIZE,IDCON_SIZE).ConvertToBitmap()
+            bmp = wx.Image(os.path.join(CPABE.IMG_PATH,'%s_priv_key.png'%self.pj_mkey[jid]),wx.BITMAP_TYPE_PNG).Scale(IDCON_SIZE,IDCON_SIZE).ConvertToBitmap()
             self.il.Add(bmp)
             self.nl.append(self.pj_mkey[jid])
             self.ulc_eliwall.ClearAll()

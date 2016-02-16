@@ -2,6 +2,8 @@ import os
 import sys
 import re
 import math
+import shutil
+import base64
 import wx
 import sqlite3
 
@@ -382,15 +384,14 @@ class MainFrame(wx.Frame):
                     return False
                 cursor.execute("INSERT INTO Users VALUES(NULL,%d, '%s', '%d', '%d', NULL)"%(staffId,self.username,depart_id,pos_id))
                 if GEN.generateKey(staffId,self.username,depart_id,pos_id,None):
-                    import shutil
-                    shutil.copyfile("userImages/default.jpg",GEN.IMG_PATH+self.username+"_"+str(staffId)+".jpg")
+                    if not os.path.exists(os.path.join(GEN.LOCAL_PATH,"userImages/default.jpg")):
+                        print "default image " + os.path.join(GEN.LOCAL_PATH,"userImages/default.jpg") + " not found"
+                    shutil.copyfile(os.path.join(GEN.LOCAL_PATH,"userImages/default.jpg"),os.path.join(GEN.IMG_PATH,self.username+"_"+str(staffId)+".jpg"))
                     f = None
                     code = None
                     with open(GEN.PRIV_NAME,mode='rb') as f:
-                        import base64
                         src = f.read()
                         code = src.encode('base64')
-                    #oncreated = wx.MessageDialog(self,"User '%s' has been successfully created\nThe secret passphrase for '%s' is:\n"%(self.username,self.username),"User created")
                     oncreated = wx.Frame(self,title="User created",style=wx.DEFAULT_FRAME_STYLE|wx.STAY_ON_TOP,size=(300,220))
                     boxsizer = wx.BoxSizer(wx.VERTICAL)
                     createdlabel = wx.StaticText(oncreated,label="User '%s' has been successfully created."%self.username)
@@ -436,11 +437,11 @@ class MainFrame(wx.Frame):
                 pos = cursor.fetchall()[0][0]
                 cursor.execute("DELETE FROM Users WHERE Staff_Id='%d' AND Name='%s' AND Department='%d' AND Position='%d'"%(int(selected_item[0]),selected_item[1],depart,pos))
                 try:
-                    os.remove("%s%s_priv_key"%(GEN.KEYS_PATH,selected_item[1]+"_"+str(selected_item[0])))
+                    os.remove(os.path.join(GEN.KEYS_PATH,"%s_priv_key"%(selected_item[1]+"_"+str(selected_item[0]))))
                 except:
                     pass
                 try:
-                    os.remove("%s%s_priv_key_meta"%(GEN.KEYS_PATH,selected_item[1]+"_"+str(selected_item[0])))
+                    os.remove(os.path.join(GEN.KEYS_PATH,"%s_priv_key_meta"%(selected_item[1]+"_"+str(selected_item[0]))))
                 except:
                     pass
                 wx.MessageBox("User '%s' has been successfully deleted"%selected_item[1])
@@ -494,7 +495,7 @@ class MainFrame(wx.Frame):
         department = selected_item[2]
         position = selected_item[3]
         privkey_filename = user_name + "_" +str(user_id)
-        GEN.PRIV_NAME = "%s%s_priv_key"%(GEN.KEYS_PATH,privkey_filename)
+        GEN.PRIV_NAME = os.path.join(GEN.KEYS_PATH,"%s_priv_key"%(privkey_filename))
         try:
             with open(GEN.PRIV_NAME,mode='rb') as f:
                 import base64
@@ -552,16 +553,14 @@ class LoginWindows(wx.Frame):
     def checkSystemExist(self):
         if self.sharedFolderPathSelection.GetPath():
             GEN.SHARED_FOLDER_PATH = self.sharedFolderPathSelection.GetPath()
-            if GEN.SHARED_FOLDER_PATH[-1]!="/":
-                GEN.SHARED_FOLDER_PATH += "/"
         else:
             GEN.SHARED_FOLDER_PATH = ""
 
-        GEN.ABEsafe_PATH = GEN.SHARED_FOLDER_PATH+"ABEsafe/"
-        GEN.KEYS_PATH = ".keys/"+GEN.SHARED_FOLDER_PATH+"/"
-        GEN.CONFIG_PATH = GEN.ABEsafe_PATH+".configs/"
-        GEN.IMG_PATH = GEN.ABEsafe_PATH+"/userImages/"
-        GEN.DATABASE = GEN.CONFIG_PATH+GEN.DATABASE_file
+        GEN.ABEsafe_PATH = os.path.join(GEN.SHARED_FOLDER_PATH,"ABEsafe")
+        GEN.KEYS_PATH = os.path.join(".keys",GEN.SHARED_FOLDER_PATH)
+        GEN.CONFIG_PATH = os.path.join(GEN.ABEsafe_PATH,".configs")
+        GEN.IMG_PATH = os.path.join(GEN.ABEsafe_PATH,"userImages")
+        GEN.DATABASE = os.path.join(GEN.CONFIG_PATH,GEN.DATABASE_file)
         
         if not os.path.exists(GEN.KEYS_PATH):
             os.makedirs(GEN.KEYS_PATH)
@@ -596,18 +595,18 @@ class LoginWindows(wx.Frame):
         self.selectButton.SetLabel("Select" if self.checkSystemExist() else "Create")
 
     def saveSelectedPath(self):
-        pathexist = True if os.path.exists(".path") else False
+        pathexist = True if os.path.exists(os.path.join(GEN.LOCAL_PATH,".path")) else False
         f = None
         tmp = None
         tpath = None
         if pathexist:
-            with open(".path",'r') as f:
+            with open(os.path.join(GEN.LOCAL_PATH,".path"),'r') as f:
                 tmp = f.read()
                 tpath = "" if len(GEN.SHARED_FOLDER_PATH)==0 else GEN.SHARED_FOLDER_PATH[:-1] if GEN.SHARED_FOLDER_PATH[-1]=="/" else GEN.SHARED_FOLDER_PATH
         else:
             tpath = ""
         if tmp != tpath or pathexist==False:
-            with open(".path",'w+') as f:
+            with open(os.path.join(GEN.LOCAL_PATH,".path"),'w+') as f:
                 f.write(tpath)
 
     def OnSelectUserAccount(self,e):
@@ -624,7 +623,7 @@ class LoginWindows(wx.Frame):
                 else:
                     GEN.ABEsafe_gensystem(self.log,GEN.SHARED_FOLDER_PATH,False)
                 wx.MessageBox("ABEsafe has been successfully deployed.")
-                with open(".path",'w+') as f:
+                with open(os.path.join(GEN.LOCAL_PATH,".path"),'w+') as f:
                     tpath = GEN.SHARED_FOLDER_PATH[:-1] if GEN.SHARED_FOLDER_PATH[-1]=="/" else GEN.SHARED_FOLDER_PATH
                     f.write(tpath)
                 self.getDefaultSharedFolderPath()
@@ -638,15 +637,14 @@ class LoginWindows(wx.Frame):
         self.Destroy()
 
     def getDefaultSharedFolderPath(self):
-        if os.path.exists(".path"):
-            f = open(".path",'r')
+        if os.path.exists(os.path.join(GEN.LOCAL_PATH,".path")):
+            f = open(os.path.join(GEN.LOCAL_PATH,".path"),'r')
             tmp = f.readline()
             f.close()
             if os.path.exists(tmp):
-                sfp = tmp+"/"
-                abesafep = sfp+"ABEsafe/"
-                cp = abesafep+".configs/"
-                d = cp+GEN.DATABASE_file
+                abesafep = os.path.join(tmp,"ABEsafe")
+                cp = os.path.join(abesafep,".configs")
+                d = os.path.join(cp,GEN.DATABASE_file)
                 if os.path.exists(abesafep) and os.path.exists(cp) and os.path.exists(d):
                     self.sharedFolderPathSelection.SetPath(tmp)
                     self.OnSharedFolderSelected(self.sharedFolderPathSelection)

@@ -10,17 +10,18 @@ from ctypes import *
 
 
 class ABEsafe_generator:
+	LOCAL_PATH = os.path.dirname(os.path.realpath(__file__))
 	SHARED_FOLDER_PATH = ""
-	ABEsafe_PATH = SHARED_FOLDER_PATH+"ABEsafe/"
-	KEYS_PATH = ".keys/"+SHARED_FOLDER_PATH+"/"
-	CONFIG_PATH = ABEsafe_PATH+".configs/"
-	IMG_PATH = ABEsafe_PATH+"userImages/"
+	ABEsafe_PATH = os.path.join(SHARED_FOLDER_PATH,"ABEsafe")
+	KEYS_PATH = os.path.join(os.path.join(LOCAL_PATH,".keys"),SHARED_FOLDER_PATH)
+	CONFIG_PATH = os.path.join(ABEsafe_PATH,".configs")
+	IMG_PATH = os.path.join(ABEsafe_PATH,"userImages")
 	KEYGEN_PATH = ""
 	DATABASE_file = "test.db"
-	DATABASE = CONFIG_PATH+DATABASE_file
+	DATABASE = os.path.join(CONFIG_PATH,DATABASE_file)
 	PRIV_NAME = ""
 	ABE_LIBRARY = 'libabe_linux.so' if platform.system().lower() == 'linux' else 'libabe.so'
-	libc = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.realpath(__file__)),os.path.join('lib',ABE_LIBRARY)))
+	libc = cdll.LoadLibrary(os.path.join(LOCAL_PATH,os.path.join('lib',ABE_LIBRARY)))
 	@staticmethod
 	def generateKey(staffId,username,department,position,seclv):
 	    try:
@@ -45,20 +46,20 @@ class ABEsafe_generator:
 	    sec_prop = "" if sec_lv is None else "seclv = %d"%sec_lv
 	    ABEsafe_generator.PRIV_NAME = "%s%s_priv_key"%(ABEsafe_generator.KEYS_PATH,privkey_filename)
 	    s = "%s"%("" if staffId_prop=="" else "'%s'"%staffId_prop)+" '"+username+"' '"+department+"' '"+position+"' "+"%s"%("" if sec_prop=="" else "'%s'"%sec_prop)
-	    status = ABEsafe_generator.libc.abe_generatekey(str("%s%s_priv_key"%(ABEsafe_generator.KEYS_PATH,privkey_filename)), str(ABEsafe_generator.CONFIG_PATH+".pub_key"), str(".master_key"), str(s))
-	    with open('%s.%s'%(ABEsafe_generator.CONFIG_PATH,privkey_filename),'w+') as f:
+	    status = ABEsafe_generator.libc.abe_generatekey(str(os.path.join(ABEsafe_generator.KEYS_PATH,"%s_priv_key"%privkey_filename)), str(os.path.join(ABEsafe_generator.CONFIG_PATH,".pub_key")), str(os.path.join(ABEsafe_generator.LOCAL_PATH,".master_key")), str(s))
+	    with open(os.path.join(ABEsafe_generator.CONFIG_PATH,'.%s'%privkey_filename),'w+') as f:
 	    	f.write("OK")
 	    
-	    ABEsafe_generator.libc.abe_encrypt(str("%s.%s_test"%(ABEsafe_generator.CONFIG_PATH,privkey_filename)), str(ABEsafe_generator.CONFIG_PATH+".pub_key"), str("%s.%s"%(ABEsafe_generator.CONFIG_PATH,privkey_filename)), str("%s"%(staffId_prop+" & "+username+" & "+department+" & "+position+"%s"%("" if sec_prop=="" else " & %s"%sec_prop))))
+	    ABEsafe_generator.libc.abe_encrypt(str(os.path.join(ABEsafe_generator.CONFIG_PATH,".%s_test"%privkey_filename)), str(os.path.join(ABEsafe_generator.CONFIG_PATH,".pub_key")), str(os.path.join(ABEsafe_generator.CONFIG_PATH,".%s"%privkey_filename)), str("%s"%(staffId_prop+" & "+username+" & "+department+" & "+position+"%s"%("" if sec_prop=="" else " & %s"%sec_prop))))
 	    return status==0	     
 
 	@staticmethod
 	def ABEsafe_gensystem(log,shared_dir,needSample=True):
 		ABEsafe_generator.SHARED_FOLDER_PATH = shared_dir
-		ABEsafe_generator.ABEsafe_PATH = ABEsafe_generator.SHARED_FOLDER_PATH+"ABEsafe/"
-		ABEsafe_generator.KEYS_PATH = ".keys/"+ABEsafe_generator.SHARED_FOLDER_PATH+"/"
-		ABEsafe_generator.CONFIG_PATH = ABEsafe_generator.ABEsafe_PATH+".configs/"
-		ABEsafe_generator.DATABASE = ABEsafe_generator.CONFIG_PATH+"test.db"
+		ABEsafe_generator.ABEsafe_PATH = os.path.join(ABEsafe_generator.SHARED_FOLDER_PATH,"ABEsafe")
+		ABEsafe_generator.KEYS_PATH = os.path.join(os.path.join(ABEsafe_generator.LOCAL_PATH,".keys"),ABEsafe_generator.SHARED_FOLDER_PATH)
+		ABEsafe_generator.CONFIG_PATH = os.path.join(ABEsafe_generator.ABEsafe_PATH,".configs")
+		ABEsafe_generator.DATABASE = os.path.join(ABEsafe_generator.CONFIG_PATH,"test.db")
 		try:
 			if os.path.exists(ABEsafe_generator.ABEsafe_PATH):
 				shutil.rmtree(ABEsafe_generator.ABEsafe_PATH)
@@ -77,8 +78,8 @@ class ABEsafe_generator:
 			os.makedirs(ABEsafe_generator.IMG_PATH)
 			os.chmod(ABEsafe_generator.IMG_PATH,0o766)
 
-		pub_key_path = ABEsafe_generator.CONFIG_PATH+".pub_key"
-		status = ABEsafe_generator.libc.abe_setup(str(".master_key"), str(pub_key_path))
+		pub_key_path = os.path.join(ABEsafe_generator.CONFIG_PATH,".pub_key")
+		status = ABEsafe_generator.libc.abe_setup(os.path.join(ABEsafe_generator.LOCAL_PATH,".master_key"), str(pub_key_path))
 		if status==0:
 			log.info("Master Key generated successfully")
 		else:
@@ -144,7 +145,6 @@ class ABEsafe_generator:
 				mapped_users = []
 				cursor.execute("CREATE TABLE IF NOT EXISTS Users(Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, Staff_Id INTEGER UNIQUE, Name VARCHAR(40) NOT NULL, Department INTEGER, Position INTEGER, SecurityLevel INT, FOREIGN KEY(Department) REFERENCES department(Department_Id), FOREIGN KEY(Position) REFERENCES position(Position_Id))")
 				if needSample:
-					
 					genKeyQueue = Queue.Queue()
 					def genf(s_id,name,d_id,pos_id,sec):
 						if not ABEsafe_generator.generateKey(s_id,name,d_id,pos_id,sec):
@@ -177,7 +177,7 @@ class ABEsafe_generator:
 							t1=threading.Thread(target=genf,args=(a_staff_id,a_name,depart_id,pos_id,sec))
 							genKeyQueue.put(t1)
 							t1.start()
-							shutil.copyfile("userImages/"+a_name+"_"+str(a_staff_id)+".jpg",ABEsafe_generator.IMG_PATH+a_name+"_"+str(a_staff_id)+".jpg")
+							shutil.copyfile(os.path.join(os.path.join(ABEsafe_generator.LOCAL_PATH,"userImages"),a_name+"_"+str(a_staff_id)+".jpg"),os.path.join(ABEsafe_generator.IMG_PATH,a_name+"_"+str(a_staff_id)+".jpg"))
 						except Exception, e:
 							log.error(e)
 					genKeyQueue.join() 
