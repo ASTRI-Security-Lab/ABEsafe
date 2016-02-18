@@ -278,7 +278,7 @@ class MainFrame(wx.Frame):
 
     def onAddDepartmentClicked(self,e):
         if self.departmentValidation():
-            confirm = wx.MessageDialog(self,'Are you sure to add new department "%s" ?'%self.department,"Confirm to add new department",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            confirm = wx.MessageDialog(self,'Are you sure to add new department "%s" ?'%self.department,"Confirm to add new department",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_NONE)
             if confirm.ShowModal() != wx.ID_YES:
                 return
             connection = None
@@ -312,7 +312,7 @@ class MainFrame(wx.Frame):
         
     def onAddPositionClicked(self,e):
         if self.positionValidation():
-            confirm = wx.MessageDialog(self,'Are you sure to add new position "%s" ?'%self.position,"Confirm to add new position",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_QUESTION)
+            confirm = wx.MessageDialog(self,'Are you sure to add new position "%s" ?'%self.position,"Confirm to add new position",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_NONE)
             if confirm.ShowModal() != wx.ID_YES:
                 return
             connection = None
@@ -423,7 +423,7 @@ class MainFrame(wx.Frame):
     def onRemoveUserClicked(self,e):
         selected_index = self.userList.GetNextSelected(-1)
         selected_item = self.userdata[selected_index]
-        confirm = wx.MessageDialog(self,"Are you sure you want to delete user '%s'"%selected_item[1],"Deleting User",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_WARNING)
+        confirm = wx.MessageDialog(self,"Are you sure you want to delete user '%s'"%selected_item[1],"Deleting User",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_NONE)
         if confirm.ShowModal() != wx.ID_YES:
             return False
         connection = None
@@ -615,9 +615,9 @@ class LoginWindows(wx.Frame):
         Need to check the username and password before access to the account
         """
         if not self.checkSystemExist():
-            createdABEsafeConfirm = wx.MessageDialog(self,"ABEsafe System is currently not built on this folder,\nDo you want to build ABEsafe System on this folder?","Build a new ABEsafe System",wx.YES_NO|wx.YES_DEFAULT)
+            createdABEsafeConfirm = wx.MessageDialog(self,"ABEsafe System is currently not built on this folder,\nDo you want to build ABEsafe System on this folder?","Build a new ABEsafe System",wx.YES_NO|wx.YES_DEFAULT|wx.ICON_NONE)
             if createdABEsafeConfirm.ShowModal() == wx.ID_YES:
-                sampleUserSetCofirm = wx.MessageDialog(self,"Do you want to add sample users, department and position?","Sample dataset",wx.YES_NO|wx.YES_DEFAULT)
+                sampleUserSetCofirm = wx.MessageDialog(self,"Do you want to add sample users, department and position?","Sample dataset",wx.YES_NO|wx.YES_DEFAULT|wx.ICON_NONE)
                 if sampleUserSetCofirm.ShowModal() == wx.ID_YES:
                     GEN.ABEsafe_gensystem(self.log,GEN.SHARED_FOLDER_PATH,True)
                 else:

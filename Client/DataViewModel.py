@@ -290,7 +290,7 @@ class FilePanel(wx.Panel):
             self.parent.parent.parent.showMessage("No file is selected",BLACK_COLOR)
             return
         obj = self.model.ItemToObject(self.dvc.GetSelection())
-        dialog = wx.MessageDialog(self,"Are you sure to delete %s ?" % (obj.getRname()),"Deleting file",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_INFORMATION)
+        dialog = wx.MessageDialog(self,"Are you sure to delete %s ?" % (obj.getRname()),"Deleting file",wx.YES_NO|wx.NO_DEFAULT|wx.ICON_NONE)
         confirm_delete = dialog.ShowModal() == wx.ID_YES
         if not confirm_delete:
             self.parent.parent.parent.clearMessage()

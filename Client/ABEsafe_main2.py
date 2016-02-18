@@ -322,7 +322,7 @@ class PolicyGUI_frame(wx.Frame):
     def OnConfirmGroup(self,e):
         rule_string = self.parsePolicyStringFromOptions(False)
         if(rule_string != ""):
-            selectConfirm = wx.MessageDialog(self,"You have selected some options for current group, do you want to add this group?","Add a new group",wx.YES_NO|wx.YES_DEFAULT)
+            selectConfirm = wx.MessageDialog(self,"You have selected some options for current group, do you want to add this group?","Add a new group",wx.YES_NO|wx.YES_DEFAULT|wx.ICON_NONE)
             if selectConfirm.ShowModal() == wx.ID_YES:
                 if(self.parent.p_policy.search.GetText().strip() != ""):
                     self.parent.p_policy.search.AppendText(" | ")
@@ -406,12 +406,12 @@ class PolicyGUI_frame(wx.Frame):
         return attribute_string
 
     def pop_error_when_parsing(self):
-        dialog = wx.MessageDialog(self,self.error_message,"Error when submitting", wx.OK|wx.ICON_INFORMATION)
+        dialog = wx.MessageDialog(self,self.error_message,"Error when submitting", wx.OK|wx.ICON_NONE)
         self.error_message = ""
         dialog.ShowModal()
 
     def pop_empty_rule_restriction(self):
-        dialog = wx.MessageDialog(self,"No restriction on the group to access the encrypted file.\n","No restriction",wx.OK|wx.ICON_EXCLAMATION)
+        dialog = wx.MessageDialog(self,"No restriction on the group to access the encrypted file.\n","No restriction",wx.OK|wx.ICON_NONE)
         dialog.ShowModal()
 
     def confirmed_empty_rule_restriction(self,e):

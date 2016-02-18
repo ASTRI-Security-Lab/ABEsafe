@@ -310,7 +310,7 @@ class MainFrame(wx.Frame):
 
     def OnHelp(self,ev):
         readme = open('README','r')
-        dlg = wx.MessageDialog(self,''.join(readme.readlines()),"CPABE Help",wx.OK|wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self,''.join(readme.readlines()),"CPABE Help",wx.OK|wx.ICON_NONE)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -482,11 +482,11 @@ class LoginWindows(wx.Frame):
         if not os.path.exists(CPABE.KEYS_PATH):
             os.makedirs(CPABE.KEYS_PATH)
         if not(os.path.exists(CPABE.ABEsafe_PATH) and os.path.exists(CPABE.CONFIG_PATH) and os.path.exists(CPABE.DATABASE)):
-            wx.MessageBox("ABEsafe System is currently not built on this folder.","ABEsafe System not found",wx.OK)
+            wx.MessageBox("ABEsafe System is currently not built on this folder.","ABEsafe System not found",wx.OK|wx.ICON_NONE)
             self.OnSharedFolderSelected(self.sharedFolderPathSelection)
             return
         elif self.userSelected == False:
-            wx.MessageBox("Please select a user", "No user is selected",wx.OK)
+            wx.MessageBox("Please select a user", "No user is selected",wx.OK|wx.ICON_NONE)
             self.OnSharedFolderSelected(self.sharedFolderPathSelection)
             return
         else:
@@ -496,7 +496,7 @@ class LoginWindows(wx.Frame):
                 USERNAME = self.namelist[self.usernameComboBox.GetStringSelection()]
                 USERKEY = USERNAME+"_"+str(USER_ID)+'_priv_key'
             except KeyError as ke:
-                wx.MessageBox("User selected is invalid","Invalid user selected")
+                wx.MessageBox("User selected is invalid","Invalid user selected",wx.ICON_NONE)
                 return
             user = None
             connection = None
@@ -531,7 +531,7 @@ class LoginWindows(wx.Frame):
                         decodedphrase = passphrase.decode('base64')
                         f.write(decodedphrase)
                 except:
-                    wx.MessageBox("The passphrase is incorrect","incorrect passphrase")
+                    wx.MessageBox("The passphrase is incorrect","incorrect passphrase",wx.ICON_NONE)
                     os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                     return "decoding error"
                 if not os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
@@ -565,7 +565,7 @@ class LoginWindows(wx.Frame):
                     self.OnSharedFolderSelected(self.sharedFolderPathSelection)
                     return
             elif self.passphraseBox.IsEnabled() and passphrase == "":
-                wx.MessageBox("Please enter the secret passphrase","Secret Passphrase required")
+                wx.MessageBox("Please enter the secret passphrase","Secret Passphrase required",wx.ICON_NONE)
                 self.OnSharedFolderSelected(self.sharedFolderPathSelection)
                 if os.path.exists(os.path.join(CPABE.KEYS_PATH,USERKEY)):
                     os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
@@ -577,7 +577,7 @@ class LoginWindows(wx.Frame):
                         os.remove(os.path.join(CPABE.KEYS_PATH,USERKEY))
                     except:
                         pass
-                    wx.MessageBox("User '%s' is not found in the system."%USERNAME,"User not found in this system",wx.OK)
+                    wx.MessageBox("User '%s' is not found in the system."%USERNAME,"User not found in this system",wx.OK|wx.ICON_NONE)
                     self.OnSharedFolderSelected(self.sharedFolderPathSelection)
                     return
             else:

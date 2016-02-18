@@ -41,7 +41,6 @@ pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/P
 Download this repository, with git:
 ```
 git clone https://github.com/ASTRI-Security-Lab/ABEsafe
-cd ABEsafe
 ```
 
 ## Using ABEsafe
@@ -52,8 +51,7 @@ Use the admin tool to generate the keys and attributes for each user. A sample u
 ## Admin
 To run the admin tool,
 ```
-cd Admin
-python ABEsafe_admin.py
+python ABEsafe/Admin
 ```
 Short demo: [Admin tool demo](https://www.youtube.com/watch?v=b140-TauYIU)
 
@@ -63,8 +61,7 @@ You can then create a new user, or retrieve the passphrase of an existing user.
 ## Client
 To run the client,
 ```
-cd Client
-python ABEsafe_main.py
+python ABEsafe/Client
 ```
 Short demo: [Client application demo](https://www.youtube.com/watch?v=MbeI-toh4nI)
 
