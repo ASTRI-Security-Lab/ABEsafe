@@ -10,7 +10,9 @@ if [[ `uname` == 'Linux' ]] && $(hash apt-get 2>/dev/null); then
 	sudo pip install --upgrade setuptools
 	sudo pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/Phoenix/snapshot-builds/ wxPython_Phoenix
 elif [[ `uname` == 'Darwin' ]]; then
-	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	if ! [ $(hash brew 2>/dev/null) ]; then
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
 	brew update
 	brew install git
 	brew install glib
