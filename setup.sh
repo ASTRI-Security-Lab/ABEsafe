@@ -15,9 +15,8 @@ elif [[ `uname` == 'Darwin' ]]; then
 	fi
 	brew update
 	brew install git
-	brew install glib
+	brew install glib gmp pbc
 	brew install python
-	brew install pip
 	pip install --upgrade pip
 	pip install --upgrade setuptools
 	pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/Phoenix/snapshot-builds/ wxPython_Phoenix
@@ -25,5 +24,3 @@ else
 	echo "It seems your system is not Mac OS X nor Debian Linux distribution, and is currently unsupported."
 	exit 1
 fi
-
-git clone https://github.com/ASTRI-Security-Lab/ABEsafe
