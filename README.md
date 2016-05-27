@@ -4,7 +4,7 @@
 
 This is a NAS based encrypted secure file sharing system for a workspace with users 
 having multiple roles and identities, in a simple fashion for management. 
-ABEsafe is developed for Unix-based system. (for Mac and Linux, tested on Mac)
+ABEsafe is developed for Unix-based system. (for Mac and 64bit Linux, tested on Mac)
 
 paper: [Ciphertext-Policy Attribute-Based Encryption](https://www.cs.utexas.edu/~bwaters/publications/papers/cp-abe.pdf)
 
