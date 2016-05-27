@@ -17,6 +17,8 @@ Client folder contains client user interface for user login, encrypting and decr
 ABEsafe is written in python 2.7, using `wxpython` for the GUI.
 To run the scripts, `wxpython` has to be installed first.
 
+You need to have `PBC library` installed.
+
 `libabe.so` is the shared library for the underlying Ciphertext-Policy Attribute-based Encryption with 
 slight performance improvement based on [John Bethencourt's implementation](http://acsc.cs.utexas.edu/cpabe/).
 
